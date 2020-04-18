@@ -1,9 +1,16 @@
 package com.cmpe277.lens
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.provider.AlarmClock
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.text.method.ScrollingMovementMethod
+import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -64,12 +71,51 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private class OnClickListener(val context: Context, val text: String) : ClickableSpan() {
+
+        override fun onClick(widget: View) {
+            val intent = Intent(context, WebviewActivity::class.java)
+            intent.putExtra(AlarmClock.EXTRA_MESSAGE, text)
+            context.startActivity(intent)
+        }
+    }
 
     private fun processResultText(resultText: FirebaseVisionText) {
         if (resultText.textBlocks.size == 0) {
             editText.setText("No Text Found")
             return
         }
+
+        var data = StringBuilder()
+        var lines = resultText.textBlocks.flatMap { it.lines }
+        lines.forEach {
+            data.append(it.text)
+            data.append("\n")
+        }
+
+        val spannableString = SpannableStringBuilder(data)
+        println("$TAG data = $spannableString")
+
+
+        val toCharArray = data.toString().toCharArray()
+        var start = 0
+        var end = 0
+        for (i in toCharArray.indices) {
+            if (toCharArray[i] == '\n') {
+                end = i
+                println("$TAG spanned start  = $start, spanned end = $end")
+                spannableString.setSpan(OnClickListener(this, spannableString.substring(start,end)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                start = end + 1
+                continue
+            }
+            end++
+        }
+
+        editText.text = spannableString
+        editText.movementMethod = LinkMovementMethod.getInstance()
+        editText.movementMethod = ScrollingMovementMethod.getInstance()
+
+
         for (block in resultText.textBlocks) {
             val blockText = block.text
             val blockConfidence = block.confidence
@@ -88,9 +134,13 @@ class MainActivity : AppCompatActivity() {
                     val elementLanguages = element.recognizedLanguages
                     val elementCornerPoints = element.cornerPoints
                     val elementFrame = element.boundingBox
-                    editText.append(elementText + "\n")
+                   // editText.append(elementText + "\n")
                 }
             }
         }
+    }
+
+    companion object {
+        const val TAG = "MainActivity"
     }
 }
