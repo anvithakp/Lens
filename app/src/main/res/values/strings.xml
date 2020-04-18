@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Lens</string>
+    <string name="recognizetext">Find Text</string>
+    <string name="translatetext">Translate</string>
+    <string name="selectpic">Select Img</string>
+
+</resources>

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "310332496273",
+    "firebase_url": "https://textrecognizer-d3af9.firebaseio.com",
+    "project_id": "textrecognizer-d3af9",
+    "storage_bucket": "textrecognizer-d3af9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:310332496273:android:690fb533e81da7da65a230",
+        "android_client_info": {
+          "package_name": "com.cmpe277.lens"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "310332496273-svdre9jnpm2a6vn70p2vanuf5kqk8fne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCc91d5gsD6ClNFMwYhe_U4A4Y-6UaRWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "310332496273-svdre9jnpm2a6vn70p2vanuf5kqk8fne.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
