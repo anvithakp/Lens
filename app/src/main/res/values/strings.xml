@@ -1,7 +1,16 @@
 <resources>
-    <string name="app_name">Lens</string>
+    <string name="app_name">Traveller\'s Lens</string>
     <string name="recognizetext">Find Text</string>
     <string name="translatetext">Translate</string>
     <string name="selectpic">Select Img</string>
-
+    <string name="signup_btn">Sign Up</string>
+    <string name="login_btn">Login</string>
+    <string name="get_password_link">Get Password Link</string>
+    <string name="back">Back</string>
+    <string name="logout">Logout</string>
+    <string name="new_password">New Password</string>
+    <string name="update_pass">Update Password</string>
+    <string name="email_hint">Email Hint</string>
+    <string name="password_hint">Password Hint</string>
+    <string name="capture_img">Capture</string>
 </resources>

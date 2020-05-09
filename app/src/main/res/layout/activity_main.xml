@@ -2,76 +2,106 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-
-    <RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="15dp">
+    tools:context=".MainActivity">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:background="#FFFFFF"
+            android:drawableTop="@drawable/icon_imgupload"
+            android:onClick="selectImage"
+            android:textColor="#6200EE" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="250dp"
-                    app:srcCompat="@drawable/humor" />
-
-                <EditText
-                    android:id="@+id/editText"
-                    android:layout_width="match_parent"
-                    android:layout_height="400dp"
-                    android:background="@android:color/transparent"
-                    android:gravity="center"
-                    android:hint="Output window"
-                    android:inputType="textMultiLine"
-                    android:padding="10dp"
-                    android:scrollbars="vertical" />
-
-                <LinearLayout
-                    android:id="@+id/actionContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:onClick="selectImage"
-                        android:text="@string/selectpic" />
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:onClick="startRecognizing"
-                        android:text="@string/recognizetext" />
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:onClick="startTranslating"
-                        android:text="@string/translatetext" />
-
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
+        <Button
+            android:id="@+id/camera_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="#FFFFFF"
+            android:drawableTop="@drawable/icon_camera"
+            android:textColor="#6200EE" />
     </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:src="@drawable/ic_photo_black_24dp" />
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="320dp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:hint="Recognized text appear here"
+            android:inputType="textMultiLine"
+            android:padding="10dp"
+            android:scrollbars="vertical" />
+
+        <LinearLayout
+            android:id="@+id/actionContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:orientation="horizontal">
+
+
+
+            <Button
+                android:id="@+id/findtext_btn"
+                android:enabled="false"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="startRecognizing"
+                android:drawableTop="@drawable/icon_ocr"
+                android:background="#FFFFFF"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="startTranslating"
+                android:drawableTop="@drawable/icon_translate"
+                android:background="#FFFFFF" />
+
+
+        </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/actionContainer1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:orientation="horizontal">
+
+
+
+    <Button
+        android:id="@+id/logout_btn"
+        android:drawableTop="@drawable/icon_signout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF" />
+    </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

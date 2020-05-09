@@ -15,6 +15,43 @@
       },
       "oauth_client": [
         {
+          "client_id": "310332496273-kihl4kffdgbge9i3t1aq3vi9qqafi65e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cmpe277.lens",
+            "certificate_hash": "53b01ba55c1cf4c6e4a1e6f4791692d7110c894e"
+          }
+        },
+        {
+          "client_id": "310332496273-svdre9jnpm2a6vn70p2vanuf5kqk8fne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCc91d5gsD6ClNFMwYhe_U4A4Y-6UaRWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "310332496273-svdre9jnpm2a6vn70p2vanuf5kqk8fne.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:310332496273:android:a5c477f308feac2f65a230",
+        "android_client_info": {
+          "package_name": "com.example.kotlinauthfb"
+        }
+      },
+      "oauth_client": [
+        {
           "client_id": "310332496273-svdre9jnpm2a6vn70p2vanuf5kqk8fne.apps.googleusercontent.com",
           "client_type": 3
         }
