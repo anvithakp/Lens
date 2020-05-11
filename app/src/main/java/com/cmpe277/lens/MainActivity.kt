@@ -7,7 +7,6 @@ import android.content.ContentValues
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
 import com.google.firebase.auth.FirebaseAuth
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -23,13 +22,12 @@ import android.text.method.ScrollingMovementMethod
 import android.text.style.ClickableSpan
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.databinding.DataBindingUtil
 import com.cmpe277.lens.databinding.ActivityMainBinding
 import com.firebase.ui.auth.AuthUI
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
@@ -51,6 +49,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var cameraBtn: Button
     lateinit var findTextBtn: Button
     lateinit var toggle: ActionBarDrawerToggle
+    lateinit var navView: NavigationView
+    lateinit var navUserName: TextView
+    lateinit var navUserEmail: TextView
+    lateinit var headerView : View
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -70,7 +72,8 @@ class MainActivity : AppCompatActivity() {
         binding.drawerlayout.addDrawerListener(toggle)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toggle.syncState()
-        binding.navView.setNavigationItemSelectedListener {
+        navView = binding.navView
+        navView.setNavigationItemSelectedListener {
             when(it.itemId) {
             R.id.logout_btn1 -> logout()
             }
@@ -81,6 +84,9 @@ class MainActivity : AppCompatActivity() {
         findTextBtn = binding.findtextBtn
 //        logoutBtn = binding.logoutBtn
         cameraBtn = binding.cameraBtn
+        updateNavHeader()
+
+
 
 //        logoutBtn.setOnClickListener {
 //            AuthUI.getInstance().signOut(this)
@@ -126,6 +132,8 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+
+
     private fun logout() {
         AuthUI.getInstance().signOut(this)
             .addOnCompleteListener() {
@@ -141,6 +149,15 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
+
+    }
+
+    fun updateNavHeader() {
+        headerView = navView.getHeaderView(0)
+        navUserName = headerView.findViewById(R.id.nav_username)
+        navUserEmail = headerView.findViewById(R.id.nav_useremail)
+        navUserName.setText(auth.currentUser?.displayName)
+        navUserEmail.setText(auth.currentUser?.email)
 
     }
 
