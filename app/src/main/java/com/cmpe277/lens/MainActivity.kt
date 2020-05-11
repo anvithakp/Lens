@@ -21,10 +21,12 @@ import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.method.ScrollingMovementMethod
 import android.text.style.ClickableSpan
+import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.databinding.DataBindingUtil
 import com.cmpe277.lens.databinding.ActivityMainBinding
 import com.firebase.ui.auth.AuthUI
@@ -45,11 +47,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
     lateinit var imageView: ImageView
     lateinit var editText: EditText
-    lateinit var logoutBtn: Button
+//    lateinit var logoutBtn: Button
     lateinit var cameraBtn: Button
     lateinit var findTextBtn: Button
+    lateinit var toggle: ActionBarDrawerToggle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         auth = FirebaseAuth.getInstance()
 
         if (auth.currentUser == null) {
@@ -62,24 +66,33 @@ class MainActivity : AppCompatActivity() {
 
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-
+        toggle = ActionBarDrawerToggle(this, binding.drawerlayout, R.string.open, R.string.close)
+        binding.drawerlayout.addDrawerListener(toggle)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toggle.syncState()
+        binding.navView.setNavigationItemSelectedListener {
+            when(it.itemId) {
+            R.id.logout_btn1 -> logout()
+            }
+            true
+        }
         imageView = binding.imageView
         editText = binding.editText
         findTextBtn = binding.findtextBtn
-        logoutBtn = binding.logoutBtn
+//        logoutBtn = binding.logoutBtn
         cameraBtn = binding.cameraBtn
 
-        logoutBtn.setOnClickListener {
-            AuthUI.getInstance().signOut(this)
-                .addOnCompleteListener() {
-                    //Toast.makeText(this,"Goodbye "+auth.currentUser!!.email, Toast.LENGTH_SHORT).show()
-                    showSignInOptions()
-                }
-
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
-                }
-        }
+//        logoutBtn.setOnClickListener {
+//            AuthUI.getInstance().signOut(this)
+//                .addOnCompleteListener() {
+//                    //Toast.makeText(this,"Goodbye "+auth.currentUser!!.email, Toast.LENGTH_SHORT).show()
+//                    showSignInOptions()
+//                }
+//
+//                .addOnFailureListener { e ->
+//                    Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+//                }
+//        }
 //        val intent = Intent(this, LoginActivity::class.java)
 //        startActivity(intent)
 //        finish()
@@ -105,18 +118,32 @@ class MainActivity : AppCompatActivity() {
         }
 
 }
-    fun showSignInOptions() {
 
-        startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
-            .setAvailableProviders(listOf(
-                AuthUI.IdpConfig.EmailBuilder().build(),
-                AuthUI.IdpConfig.GoogleBuilder().build()
-            ))
-            .setTheme(R.style.AppTheme)
-            .build(),
-            RC_SIGN_IN )
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(toggle.onOptionsItemSelected(item)) {
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun logout() {
+        AuthUI.getInstance().signOut(this)
+            .addOnCompleteListener() {
+                startActivity(Intent(this,LoginActivity::class.java))
+
+            }
+
+            .addOnFailureListener { e ->
+                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
 
     }
+
 
     private fun openCamera() {
 

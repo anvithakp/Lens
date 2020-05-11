@@ -39,6 +39,7 @@ class LoginActivity : AppCompatActivity() {
                     )
                     .setTheme(R.style.AppTheme)
                     .setIsSmartLockEnabled(false)
+                    .setLogo(R.drawable.lenslogo)
                     .build(),
                 RC_SIGN_IN
             )
@@ -74,5 +75,11 @@ class LoginActivity : AppCompatActivity() {
             }
             Log.e("Login", "Unknown sign in response")
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+        //moveTaskToBack(false);
     }
 }

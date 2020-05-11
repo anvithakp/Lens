@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Traveller\'s Lens</string>
+    <string name="close">Close </string>
+    <string name="open">Open</string>
     <string name="recognizetext">Find Text</string>
     <string name="translatetext">Translate</string>
     <string name="selectpic">Select Img</string>
