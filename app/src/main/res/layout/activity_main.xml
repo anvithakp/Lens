@@ -35,7 +35,6 @@
                     android:background="@android:color/transparent"
                     android:gravity="center"
                     android:hint="Output window"
-                    android:inputType="textMultiLine"
                     android:padding="10dp"
                     android:scrollbars="vertical" />
 
