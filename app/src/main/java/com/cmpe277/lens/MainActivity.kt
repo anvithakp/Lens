@@ -55,7 +55,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
     lateinit var imageView: ImageView
     lateinit var editText: EditText
-//    lateinit var logoutBtn: Button
+    lateinit var editText2: EditText
+    //    lateinit var logoutBtn: Button
     lateinit var cameraBtn: Button
     lateinit var findTextBtn: Button
     lateinit var toggle: ActionBarDrawerToggle
@@ -63,6 +64,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var navUserName: TextView
     lateinit var navUserEmail: TextView
     lateinit var headerView : View
+    lateinit var firebaseVisionText: FirebaseVisionText
+    lateinit var translateBtn : Button
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -85,13 +90,15 @@ class MainActivity : AppCompatActivity() {
         navView = binding.navView
         navView.setNavigationItemSelectedListener {
             when(it.itemId) {
-            R.id.logout_btn1 -> logout()
+                R.id.logout_btn1 -> logout()
             }
             true
         }
         imageView = binding.imageView
+        editText2 = binding.editText2
         editText = binding.editText
         findTextBtn = binding.findtextBtn
+        translateBtn = binding.translateBtn
 //        logoutBtn = binding.logoutBtn
         cameraBtn = binding.cameraBtn
         updateNavHeader()
@@ -113,6 +120,8 @@ class MainActivity : AppCompatActivity() {
 //        startActivity(intent)
 //        finish()
 //    }
+
+
 
         cameraBtn.setOnClickListener {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -145,7 +154,7 @@ class MainActivity : AppCompatActivity() {
 
         tts = TextToSpeech(this.applicationContext, listener)
 
-}
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(toggle.onOptionsItemSelected(item)) {
@@ -199,11 +208,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
-        ) {
-            //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         when(requestCode) {
             ODT_PERMISSION_REQUEST -> {
@@ -236,7 +245,10 @@ class MainActivity : AppCompatActivity() {
             findTextBtn.isEnabled = true
         }
 
+
     }
+
+
 
     fun startRecognizing(v: View) {
         if(v == null) {
@@ -264,7 +276,8 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private class OnClickListener(val context: Context, val text: String, val tts: TextToSpeech) :
+
+    private class OnClickListener(val context: Context, val text: String, val tts: TextToSpeech,var editText2: EditText,var editText: EditText) :
         ClickableSpan() {
 
         @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -293,13 +306,16 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+
         @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
         private fun identifyLanguage(inputText: String) {
+
+
             val languageIdentification = FirebaseNaturalLanguage
                 .getInstance().getLanguageIdentification(
                     FirebaseLanguageIdentificationOptions.Builder()
-                    .setConfidenceThreshold(0.34f)
-                    .build());
+                        .setConfidenceThreshold(0.34f)
+                        .build());
 
             languageIdentification
                 .identifyLanguage(inputText)
@@ -314,27 +330,30 @@ class MainActivity : AppCompatActivity() {
 
                     val translator = FirebaseNaturalLanguage.getInstance().getTranslator(options)
 
-                        translator.downloadModelIfNeeded().addOnSuccessListener {
-                            println("$TAG, model downloaded ")
-                            translator.translate(inputText)
-                                .addOnSuccessListener { translatedText ->
-                                    println("$TAG, translated text = $translatedText")
-                                    Toast.makeText(context, translatedText, Toast.LENGTH_LONG).show()
-                                    tts.speak(translatedText, TextToSpeech.QUEUE_ADD, null, "DEFAULT")
-                                }
-                                .addOnFailureListener { exception ->
-                                    println("$TAG, translated text failed $exception")
-                                }
-                        }.addOnFailureListener {
-                            println("$TAG, model download exception $it")
-                        }
+                    translator.downloadModelIfNeeded().addOnSuccessListener {
+                        println("$TAG, model downloaded ")
+                        translator.translate(inputText)
+                            .addOnSuccessListener { translatedText ->
+                                println("$TAG, translated text = $translatedText")
+                                editText.visibility = EditText.GONE
+                                editText2.visibility = EditText.VISIBLE
+                                editText2.setText(translatedText);
+                                //Toast.makeText(context, translatedText, Toast.LENGTH_LONG).show()
+                                tts.speak(translatedText, TextToSpeech.QUEUE_ADD, null, "DEFAULT")
+                            }
+                            .addOnFailureListener { exception ->
+                                println("$TAG, translated text failed $exception")
+                            }
+                    }.addOnFailureListener {
+                        println("$TAG, model download exception $it")
+                    }
 
                 }
                 .addOnFailureListener { e ->
-                                println("$TAG, Language identification error : " + e.printStackTrace())
-                                Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
-                            }
+                    println("$TAG, Language identification error : " + e.printStackTrace())
+                    Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
                 }
+        }
     }
 
     private fun processResultText(resultText: FirebaseVisionText) {
@@ -343,12 +362,72 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+
+
+        print("$TAG data block = " + resultText.text.length)
+        print("$TAG data block = " + resultText.text.replace("\\s+", " "))
+
+
+        var result = StringBuilder()
         var data = StringBuilder()
         var lines = resultText.textBlocks.flatMap { it.lines }
+        ///////////
+
         lines.forEach {
             data.append(it.text)
             data.append("\n")
+
         }
+
+        val languageIdentification = FirebaseNaturalLanguage
+            .getInstance().getLanguageIdentification(
+                FirebaseLanguageIdentificationOptions.Builder()
+                    .setConfidenceThreshold(0.34f)
+                    .build())
+
+        lines.forEach {
+
+            val text = it.text
+            languageIdentification
+                .identifyLanguage(text)
+                .addOnSuccessListener { s ->
+                    println("$TAG, text = $text , language = $s")
+                    if (s == null || s == "und" || s == "en" || FirebaseTranslateLanguage.languageForLanguageCode(s) == null) {
+                        result.append(text)
+                        result.append("\n")
+                    } else {
+                        val sourceLangCode = FirebaseTranslateLanguage.languageForLanguageCode(s)!!
+
+                        val options = FirebaseTranslatorOptions.Builder()
+                            .setSourceLanguage(sourceLangCode)
+                            .setTargetLanguage(FirebaseTranslateLanguage.EN)
+                            .build()
+
+                        val translator =
+                            FirebaseNaturalLanguage.getInstance().getTranslator(options)
+
+                        translator.downloadModelIfNeeded().addOnSuccessListener {
+                            println("$TAG, model downloaded ")
+                            translator.translate(text)
+                                .addOnSuccessListener { translatedText ->
+                                    println("$TAG, translated text = $translatedText")
+                                    result.append(translatedText)
+                                    result.append("\n")
+                                }
+                                .addOnFailureListener { exception ->
+                                    println("$TAG, translated text failed $exception")
+                                }
+                        }.addOnFailureListener {
+                            println("$TAG, model download exception $it")
+                        }
+                    }
+                }
+                .addOnFailureListener { e ->
+                    println("$TAG, Language identification error : " + e.printStackTrace())
+                }
+        }
+
+
 
         val spannableString = SpannableStringBuilder(data)
         println("$TAG data = $spannableString")
@@ -361,16 +440,28 @@ class MainActivity : AppCompatActivity() {
             if (toCharArray[i] == '\n') {
                 end = i
                 println("$TAG spanned start  = $start, spanned end = $end")
-                spannableString.setSpan(OnClickListener(this, spannableString.substring(start,end), tts), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                spannableString.setSpan(OnClickListener(this, spannableString.substring(start,end), tts, editText2,editText), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 start = end + 1
                 continue
             }
             end++
         }
-
+        editText2.visibility = EditText.GONE
+        editText.visibility = EditText.VISIBLE
         editText.text = spannableString
         editText.movementMethod = LinkMovementMethod.getInstance()
-        editText.movementMethod = ScrollingMovementMethod.getInstance()
+
+        translateBtn.setOnClickListener{
+            editText.visibility = EditText.GONE
+            editText2.visibility = EditText.VISIBLE
+            editText2.setText(result)
+
+
+        }
+
+
+
+//        editText.movementMethod = ScrollingMovementMethod.getInstance()
 
     }
 

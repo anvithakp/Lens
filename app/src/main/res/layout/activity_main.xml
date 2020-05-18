@@ -2,98 +2,150 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-<androidx.drawerlayout.widget.DrawerLayout
-    android:id="@+id/drawerlayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawerlayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="280dp"
-            android:src="@drawable/ic_photo_black_24dp" />
-
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:background="@android:color/transparent"
-            android:gravity="center"
-            android:hint="Recognized text appear here"
-            android:inputType="textMultiLine"
-            android:padding="10dp"
-            android:scrollbars="vertical" />
-
-        <LinearLayout
-            android:id="@+id/actionContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:background="@android:color/transparent"
-                android:drawableTop="@drawable/icon_imgupload"
-                android:onClick="selectImage"
-                android:textColor="#6200EE" />
-
-            <Button
-                android:id="@+id/findtext_btn"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/custom_button"
-                android:enabled="false"
-                android:layout_gravity="center"
-                android:onClick="startRecognizing"
-                android:text="@string/recognizetext"
-
-                android:textColor="#FFFFFF" />
-
-            <Button
-                android:id="@+id/camera_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:background="@android:color/transparent"
-                android:drawableTop="@drawable/icon_camera"
-                android:textColor="#6200EE" />
-
-
-
-
-
-        </LinearLayout>
-
-    </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navView"
         android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        app:headerLayout="@layout/nav_header"
-        app:menu="@menu/nav_drawer_menu"
-        android:layout_gravity ="start"
-        android:fitsSystemWindows="true">
+        tools:context=".MainActivity">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    </com.google.android.material.navigation.NavigationView>
 
-</androidx.drawerlayout.widget.DrawerLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:src="@drawable/ic_photo_black_24dp" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="404dp">
+
+                    <EditText
+                        android:id="@+id/editText2"
+                        android:layout_width="404dp"
+                        android:layout_height="391dp"
+                        android:background="@android:color/transparent"
+                        android:gravity="center"
+                        android:hint="Translated text appear here"
+                        android:inputType="textMultiLine"
+                        android:padding="10dp"
+                        android:scrollbars="vertical"
+                        android:visibility="invisible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <EditText
+                        android:id="@+id/editText"
+                        android:layout_width="404dp"
+                        android:layout_height="391dp"
+                        android:background="@android:color/transparent"
+                        android:gravity="center"
+                        android:hint="Recognized text appear here"
+                        android:inputType="textMultiLine"
+                        android:padding="10dp"
+                        android:scrollbars="vertical"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <LinearLayout
+                    android:id="@+id/actionContainer"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:orientation="horizontal">
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" >
+                    </Space>
+
+                    <Button
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:background="@android:color/transparent"
+                        android:drawableTop="@drawable/icon_imgupload"
+                        android:onClick="selectImage"
+                        android:textColor="#6200EE" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" >
+                    </Space>
+
+                    <Button
+                        android:id="@+id/findtext_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:drawableTop="@drawable/icon_ocr"
+                        android:enabled="false"
+                        android:onClick="startRecognizing" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" >
+                    </Space>
+
+                    <Button
+                        android:id="@+id/translate_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:drawableTop="@drawable/icon_translate"
+                        android:onClick="startTranslating" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" >
+                    </Space>
+
+                    <Button
+                        android:id="@+id/camera_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:drawableTop="@drawable/icon_camera"
+                        android:textColor="#6200EE" />
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navView"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            app:headerLayout="@layout/nav_header"
+            app:menu="@menu/nav_drawer_menu"
+            android:layout_gravity ="start"
+            android:fitsSystemWindows="true">
+
+        </com.google.android.material.navigation.NavigationView>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
 </layout>
