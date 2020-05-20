@@ -21,7 +21,6 @@ import android.speech.tts.TextToSpeech
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
-import android.text.method.ScrollingMovementMethod
 import android.text.style.ClickableSpan
 import android.view.MenuItem
 import android.view.View
@@ -29,13 +28,10 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProviders
 import com.cmpe277.lens.databinding.ActivityMainBinding
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
-import com.google.firebase.ml.naturallanguage.languageid.FirebaseLanguageIdentificationOptions
-import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage
-import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslatorOptions
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
@@ -51,8 +47,8 @@ class MainActivity : AppCompatActivity() {
 
     var outputFileUri: Uri? = null
     private lateinit var tts: TextToSpeech
-
-    private lateinit var binding : ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
+    lateinit var viewModelClass: ViewModelClass
     lateinit var imageView: ImageView
     lateinit var editText: EditText
     lateinit var editText2: EditText
@@ -63,9 +59,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var navView: NavigationView
     lateinit var navUserName: TextView
     lateinit var navUserEmail: TextView
-    lateinit var headerView : View
+    lateinit var headerView: View
     lateinit var firebaseVisionText: FirebaseVisionText
-    lateinit var translateBtn : Button
+    lateinit var translateBtn: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,9 +76,13 @@ class MainActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Welcome " + auth.currentUser!!.email, Toast.LENGTH_SHORT).show()
         }
-
+        viewModelClass = ViewModelProviders.of(this).get(ViewModelClass::class.java)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.viewModel = viewModelClass
+        binding.lifecycleOwner = this
+
+
         toggle = ActionBarDrawerToggle(this, binding.drawerlayout, R.string.open, R.string.close)
         binding.drawerlayout.addDrawerListener(toggle)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -99,27 +99,9 @@ class MainActivity : AppCompatActivity() {
         editText = binding.editText
         findTextBtn = binding.findtextBtn
         translateBtn = binding.translateBtn
-//        logoutBtn = binding.logoutBtn
         cameraBtn = binding.cameraBtn
         updateNavHeader()
 
-
-
-//        logoutBtn.setOnClickListener {
-//            AuthUI.getInstance().signOut(this)
-//                .addOnCompleteListener() {
-//                    //Toast.makeText(this,"Goodbye "+auth.currentUser!!.email, Toast.LENGTH_SHORT).show()
-//                    showSignInOptions()
-//                }
-//
-//                .addOnFailureListener { e ->
-//                    Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
-//                }
-//        }
-//        val intent = Intent(this, LoginActivity::class.java)
-//        startActivity(intent)
-//        finish()
-//    }
 
 
 
@@ -195,7 +177,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun openCamera() {
 
-        //val packageManager = activity!!.packageManager
         val takePhotoIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePhotoIntent.resolveActivity(packageManager) != null) {
             val values = ContentValues()
@@ -235,6 +216,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        editText.setText("")
+        viewModelClass.refresh()
         if (requestCode == 1 && resultCode == androidx.appcompat.app.AppCompatActivity.RESULT_OK) {
             binding.imageView.setImageURI(data!!.data)
             findTextBtn.isEnabled = true
@@ -251,7 +234,7 @@ class MainActivity : AppCompatActivity() {
 
 
     fun startRecognizing(v: View) {
-        if(v == null) {
+        if (v == null) {
             Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show()
         }
         if (imageView.drawable != null) {
@@ -264,7 +247,37 @@ class MainActivity : AppCompatActivity() {
             detector.processImage(image)
                 .addOnSuccessListener { firebaseVisionText ->
                     v.isEnabled = true
-                    processResultText(firebaseVisionText)
+                    viewModelClass.processResultText(firebaseVisionText)
+                    val spannableString = SpannableStringBuilder(viewModelClass.finalText)
+
+
+                    val toCharArray = viewModelClass.finalText.toString().toCharArray()
+                    var start = 0
+                    var end = 0
+                    for (i in toCharArray.indices) {
+                        if (toCharArray[i] == '\n') {
+                            end = i
+                            println("$TAG spanned start  = $start, spanned end = $end")
+                            spannableString.setSpan(
+                                OnClickListener(
+                                    this,
+                                    spannableString.substring(start, end),
+                                    tts,
+                                    editText2,
+                                    editText,
+                                    viewModelClass
+                                ), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                            start = end + 1
+                            continue
+                        }
+                        end++
+                    }
+                    editText2.visibility = EditText.GONE
+                    editText.visibility = EditText.VISIBLE
+                    editText.text = spannableString
+                    editText.movementMethod = LinkMovementMethod.getInstance()
+
                 }
                 .addOnFailureListener {
                     v.isEnabled = true
@@ -272,12 +285,26 @@ class MainActivity : AppCompatActivity() {
                 }
         } else {
             Toast.makeText(this, "Select an Image First", Toast.LENGTH_LONG).show()
+
+        }
+
+        translateBtn.setOnClickListener {
+            editText.visibility = EditText.GONE
+            editText2.visibility = EditText.VISIBLE
+            viewModelClass.onShowTranslate()
         }
 
     }
 
 
-    private class OnClickListener(val context: Context, val text: String, val tts: TextToSpeech,var editText2: EditText,var editText: EditText) :
+    private class OnClickListener(
+        val context: Context,
+        val text: String,
+        val tts: TextToSpeech,
+        var editText2: EditText,
+        var editText: EditText,
+        var viewModelClass: ViewModelClass
+    ) :
         ClickableSpan() {
 
         @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -286,7 +313,7 @@ class MainActivity : AppCompatActivity() {
 
             val builder = AlertDialog.Builder(context)
             builder.setTitle("Choose an option : ")
-            val options = arrayOf("Search Web", "Speak out loud", "Translate")
+            val options = arrayOf("Search Web", "Speak out loud")
             builder.setItems(options, DialogInterface.OnClickListener { _, which ->
                 when (which) {
                     0 -> {
@@ -295,7 +322,22 @@ class MainActivity : AppCompatActivity() {
                         context.startActivity(intent)
                     }
                     1 -> tts.speak(text, TextToSpeech.QUEUE_ADD, null, "DEFAULT")
-                    2 -> identifyLanguage(text)
+//                    2 -> {
+//                        viewModelClass.identifyLanguage(text)
+//                        editText.visibility = EditText.GONE
+//                        editText2.visibility = EditText.VISIBLE
+//
+////                        editText2.setText(viewModelClass.translateText.value);
+////                        Toast.makeText(context, viewModelClass.translateText.value, Toast.LENGTH_LONG)
+////                            .show()
+////                        tts.speak(
+////                            viewModelClass.translateText.value,
+////                            TextToSpeech.QUEUE_ADD,
+////                            null,
+////                            "DEFAULT"
+////                        )
+//
+//                    }
 
                 }
 
@@ -306,162 +348,6 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-        private fun identifyLanguage(inputText: String) {
-
-
-            val languageIdentification = FirebaseNaturalLanguage
-                .getInstance().getLanguageIdentification(
-                    FirebaseLanguageIdentificationOptions.Builder()
-                        .setConfidenceThreshold(0.34f)
-                        .build());
-
-            languageIdentification
-                .identifyLanguage(inputText)
-                .addOnSuccessListener { s ->
-                    println("$TAG, text = $inputText , language = $s")
-                    val sourceLangCode = FirebaseTranslateLanguage.languageForLanguageCode(s)!!
-
-                    val options = FirebaseTranslatorOptions.Builder()
-                        .setSourceLanguage(sourceLangCode)
-                        .setTargetLanguage(FirebaseTranslateLanguage.EN)
-                        .build()
-
-                    val translator = FirebaseNaturalLanguage.getInstance().getTranslator(options)
-
-                    translator.downloadModelIfNeeded().addOnSuccessListener {
-                        println("$TAG, model downloaded ")
-                        translator.translate(inputText)
-                            .addOnSuccessListener { translatedText ->
-                                println("$TAG, translated text = $translatedText")
-                                editText.visibility = EditText.GONE
-                                editText2.visibility = EditText.VISIBLE
-                                editText2.setText(translatedText);
-                                //Toast.makeText(context, translatedText, Toast.LENGTH_LONG).show()
-                                tts.speak(translatedText, TextToSpeech.QUEUE_ADD, null, "DEFAULT")
-                            }
-                            .addOnFailureListener { exception ->
-                                println("$TAG, translated text failed $exception")
-                            }
-                    }.addOnFailureListener {
-                        println("$TAG, model download exception $it")
-                    }
-
-                }
-                .addOnFailureListener { e ->
-                    println("$TAG, Language identification error : " + e.printStackTrace())
-                    Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
-                }
-        }
-    }
-
-    private fun processResultText(resultText: FirebaseVisionText) {
-        if (resultText.textBlocks.size == 0) {
-            editText.setText("No Text Found")
-            return
-        }
-
-
-
-        print("$TAG data block = " + resultText.text.length)
-        print("$TAG data block = " + resultText.text.replace("\\s+", " "))
-
-
-        var result = StringBuilder()
-        var data = StringBuilder()
-        var lines = resultText.textBlocks.flatMap { it.lines }
-        ///////////
-
-        lines.forEach {
-            data.append(it.text)
-            data.append("\n")
-
-        }
-
-        val languageIdentification = FirebaseNaturalLanguage
-            .getInstance().getLanguageIdentification(
-                FirebaseLanguageIdentificationOptions.Builder()
-                    .setConfidenceThreshold(0.34f)
-                    .build())
-
-        lines.forEach {
-
-            val text = it.text
-            languageIdentification
-                .identifyLanguage(text)
-                .addOnSuccessListener { s ->
-                    println("$TAG, text = $text , language = $s")
-                    if (s == null || s == "und" || s == "en" || FirebaseTranslateLanguage.languageForLanguageCode(s) == null) {
-                        result.append(text)
-                        result.append("\n")
-                    } else {
-                        val sourceLangCode = FirebaseTranslateLanguage.languageForLanguageCode(s)!!
-
-                        val options = FirebaseTranslatorOptions.Builder()
-                            .setSourceLanguage(sourceLangCode)
-                            .setTargetLanguage(FirebaseTranslateLanguage.EN)
-                            .build()
-
-                        val translator =
-                            FirebaseNaturalLanguage.getInstance().getTranslator(options)
-
-                        translator.downloadModelIfNeeded().addOnSuccessListener {
-                            println("$TAG, model downloaded ")
-                            translator.translate(text)
-                                .addOnSuccessListener { translatedText ->
-                                    println("$TAG, translated text = $translatedText")
-                                    result.append(translatedText)
-                                    result.append("\n")
-                                }
-                                .addOnFailureListener { exception ->
-                                    println("$TAG, translated text failed $exception")
-                                }
-                        }.addOnFailureListener {
-                            println("$TAG, model download exception $it")
-                        }
-                    }
-                }
-                .addOnFailureListener { e ->
-                    println("$TAG, Language identification error : " + e.printStackTrace())
-                }
-        }
-
-
-
-        val spannableString = SpannableStringBuilder(data)
-        println("$TAG data = $spannableString")
-
-
-        val toCharArray = data.toString().toCharArray()
-        var start = 0
-        var end = 0
-        for (i in toCharArray.indices) {
-            if (toCharArray[i] == '\n') {
-                end = i
-                println("$TAG spanned start  = $start, spanned end = $end")
-                spannableString.setSpan(OnClickListener(this, spannableString.substring(start,end), tts, editText2,editText), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                start = end + 1
-                continue
-            }
-            end++
-        }
-        editText2.visibility = EditText.GONE
-        editText.visibility = EditText.VISIBLE
-        editText.text = spannableString
-        editText.movementMethod = LinkMovementMethod.getInstance()
-
-        translateBtn.setOnClickListener{
-            editText.visibility = EditText.GONE
-            editText2.visibility = EditText.VISIBLE
-            editText2.setText(result)
-
-
-        }
-
-
-
-//        editText.movementMethod = ScrollingMovementMethod.getInstance()
 
     }
 

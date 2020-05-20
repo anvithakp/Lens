@@ -2,6 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.cmpe277.lens.ViewModelClass" />
+    </data>
+
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawerlayout"
         android:layout_width="match_parent"
@@ -43,6 +50,7 @@
                         android:padding="10dp"
                         android:scrollbars="vertical"
                         android:visibility="invisible"
+                        android:text="@{viewModel.wholetranslate}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -113,8 +121,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
-                        android:drawableTop="@drawable/icon_translate"
-                        android:onClick="startTranslating" />
+                        android:drawableTop="@drawable/icon_translate" />
 
                     <Space
                         android:layout_width="0dp"

@@ -13,7 +13,7 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-            multiDexEnabled true
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,6 +53,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-ml-natural-language-language-id-model:20.0.7'
     implementation 'com.google.firebase:firebase-ml-natural-language-translate-model:20.0.8'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    //ViewModel
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
 
 }
 apply plugin: 'com.google.gms.google-services'
+
