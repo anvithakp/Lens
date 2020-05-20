@@ -11,7 +11,7 @@ The Lens app is designed primarily for travelers, keeping in mind the language b
 
 On a high level, it allows the user to upload the image and recognize the text from it which can be translated into English. As of now, we are translating 2 languages French and Spanish to English. Identified text is also clickable for more options like Search from Google or Speak out loud to learn selected text’s pronunciation.
 
-## Features: ## <br />
+## Features:## 
 •	Register and Login – Users can register and login to our app using email or Google.<br />
 •	Text Recognition from image – Users can choose the image from the gallery or click a new one from the camera through the app. Once the picture is selected, an OCR icon can be used to identify the underlying text and display on the screen.<br />	
 •	Search capability of identified text on Google - used SpannableString to make the recognized text clickable and passing the clickable as an intent to another activity which displays google search results on selected text.<br />
@@ -27,12 +27,12 @@ Android TTS Engine for text to speech functionality
 
 ## Team Contribution: ##
 
-# Akanksha Jaiswal: # <br />
+# Akanksha Jaiswal:# 
 •	Worked on adding user authentication using Firebase UI Auth with Email and Google as providers.<br />
 •	Worked on recognizing text from an image using Firebase ML Kit’s Text Recognition on device API.<br />
 •	Worked on giving the option to the user to either select the image from the Gallery or click it from the camera. Created different intents for each.<br />
 
-# Anvitha Karanam: # <br />
+# Anvitha Karanam:# 
 •	Worked on manipulation of Recognized Firebase Text using Spannable String to make it clickable and passing the clickable as an intent to another activity which displays google search results in webview.<br />
 •	Worked on Translating the identified text by using the  Firebase ML Kit's on-device translation API, and dynamically translated the text to English from different languages like Spanish and French.<br />
 •	Worked on Text to Speech by using Android TTS Engine to obtain text to speech pronunciation of the words in the image. 
