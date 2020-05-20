@@ -27,12 +27,12 @@ Android TTS Engine for text to speech functionality
 
 ## Team Contribution: ##
 
-# Akanksha Jaiswal: # 
+### Akanksha Jaiswal: ### 
 •	Worked on adding user authentication using Firebase UI Auth with Email and Google as providers.<br />
 •	Worked on recognizing text from an image using Firebase ML Kit’s Text Recognition on device API.<br />
 •	Worked on giving the option to the user to either select the image from the Gallery or click it from the camera. Created different intents for each.<br />
 
-# Anvitha Karanam: # 
+### Anvitha Karanam: ### 
 •	Worked on manipulation of Recognized Firebase Text using Spannable String to make it clickable and passing the clickable as an intent to another activity which displays google search results in webview.<br />
 •	Worked on Translating the identified text by using the  Firebase ML Kit's on-device translation API, and dynamically translated the text to English from different languages like Spanish and French.<br />
 •	Worked on Text to Speech by using Android TTS Engine to obtain text to speech pronunciation of the words in the image. 
